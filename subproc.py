@@ -1,5 +1,10 @@
-import subprocess, os
+import subprocess, os, threading, time
 
 print("subproc pid=", os.getpid())
-subprocess.run(["python", "multiproc.py"],)
+worker = subprocess.Popen(["python", "multiproc.py"],)
+t = threading.Thread(args=(worker))
+t.daemon = True
+t.start()
 print("subproc continuing")
+time.sleep(5)
+print("subproc complete")
