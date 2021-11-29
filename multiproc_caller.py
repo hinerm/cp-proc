@@ -1,4 +1,5 @@
-import multiproc
+import multiproc as mup
 
 if __name__ == '__main__':
-    multiproc.start()
+    mup.start()
+    print(f'Queue result: {mup.q.get()}')
