@@ -5,12 +5,10 @@ def f():
     print("multiproc f pid:", os.getpid())
     time.sleep(2.4)
 
-
-if __name__ == '__main__':
+def start():
     print("multiproc main pid:", os.getpid())
     p = mp.Process(target=f)
     p.start()
     print("multiproc started")
     p.join()
     print("multiproc joined")
-
