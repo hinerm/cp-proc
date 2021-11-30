@@ -2,7 +2,7 @@ import subprocess, os, threading, time, sys
 
 def start():
     print("subproc pid=", os.getpid())
-    worker = subprocess.Popen([sys.executable, "-u", "mproc_parent.py"],
+    worker = subprocess.Popen([sys.executable, "-u", "mproc.py"],
             # When creating the subprocess with an open pipe to stdin and
             # subsequently polling that pipe, it blocks further communication
             # between subprocesses
@@ -11,7 +11,7 @@ def start():
     t = threading.Thread(args=(worker))
     t.start()
     print("subproc continuing")
-    time.sleep(5)
+    time.sleep(4)
     print("subproc complete")
 
 if __name__ == '__main__':
