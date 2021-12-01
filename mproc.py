@@ -6,11 +6,13 @@ class QueueManager(BaseManager): pass
 QueueManager.register('get_queue')
 
 def exit_on_stdin_close():
+    print("mproc poll started")
     try:
         while sys.stdin.read():
             pass
     except:
         pass
+    print("mproc poll ended")
 
 
 def start():

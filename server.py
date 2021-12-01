@@ -1,18 +1,21 @@
 from multiprocessing.managers import BaseManager
-from queue import Queue
+import multiprocessing as mp
 import threading, sys
 
 
-queue = Queue()
+ctx = mp.get_context('spawn')
+queue = ctx.Queue()
 class QueueManager(BaseManager): pass
 QueueManager.register('get_queue', callable=lambda:queue)
 
 def exit_on_stdin_close():
+    print("server poll started")
     try:
         while sys.stdin.read():
             pass
     except:
         pass
+    print("server poll ended")
 
 def start_server():
     m = QueueManager(address=('', 50000), authkey=b'abracadabra')
