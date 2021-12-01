@@ -1,42 +1,38 @@
 import multiprocessing as mp
-import os, time, sys, threading
+from os import close
+import time, sys, threading, subprocess
 
 def exit_on_stdin_close():
-    print("starting exit on close daemon")
     try:
         while sys.stdin.read():
             pass
     except:
         pass
 
-    print("ending exit on close daemon")
 
-def f(q):
-    with open("C:\\users\\hiner\\code\\cellprofiler\\cp-procs\\test.txt", 'w') as outfile:
-        outfile.write("hi")
-    print("mproc_child f pid:", os.getpid())
-    # Here is where we block
+def put_hello(q):
+    # We never reach this line if exit_poll.start() is uncommented
     q.put("hello")
     time.sleep(2.4)
 
+
 def start():
-    print("mproc_child main pid:", os.getpid())
-    thread = threading.Thread(target=exit_on_stdin_close, name="exit-on-stdin")
-    thread.daemon = True
-    # This daemon thread polling stdin blocks communication with multiprocessing.queue
+    exit_poll = threading.Thread(target=exit_on_stdin_close, name="exit-on-stdin")
+    exit_poll.daemon = True
+    # This daemon thread polling stdin blocks execution of subprocesses
     # But ONLY if running in another process with stdin connected to its parent by PIPE
-    thread.start()
+    exit_poll.start()
 
     ctx = mp.get_context('spawn')
 
     q = ctx.Queue()
-    p = ctx.Process(target=f, args=(q,))
+    p = ctx.Process(target=put_hello, args=(q,))
 
+    # Create process 3
     p.start()
-    print(f"mproc_child started: {p}")
+    print(f"result: {q.get()}")
     p.join()
-    print("mproc_child joined")
-    print(f'mproc_child pipe result: {q.get()}')
+
 
 if __name__ == '__main__':
     start()
