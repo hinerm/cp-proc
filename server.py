@@ -34,12 +34,6 @@ def start_server():
 
 def start():
 
-    exit_poll = threading.Thread(target=exit_on_stdin_close, name="exit-on-stdin")
-    exit_poll.daemon = False
-    # This daemon thread polling stdin blocks execution of subprocesses
-    # But ONLY if running in another process with stdin connected to its parent by PIPE
-    exit_poll.start()
-
     queue_server = threading.Thread(target=start_server, name="queue-server")
     queue_server.daemon = True
     queue_server.start()

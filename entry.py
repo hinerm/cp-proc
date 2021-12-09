@@ -1,9 +1,10 @@
 import subprocess, time, sys, threading
-from multiprocessing.managers import BaseManager
+from multiprocessing.managers import BaseManager, Server
 import multiprocessing as mp
+import server
 
 class QueueManager(BaseManager): pass
-QueueManager.register('get_queue', callable=lambda:queue)
+QueueManager.register('get_queue')
 
 
 def server_running(timeout=0.25):
@@ -14,14 +15,10 @@ def server_running(timeout=0.25):
 
 
 def start():
-    s_worker = subprocess.Popen([sys.executable, "-u", "server.py"],
-            # When creating the subprocess with an open pipe to stdin and
-            # subsequently polling that pipe, it blocks further communication
-            # between subprocesses
-            stdin=subprocess.PIPE,
-            close_fds=False,)
-    t = threading.Thread(args=(s_worker))
-    t.start()
+    ctx = mp.get_context('spawn')
+    p = ctx.Process(target=server.start)
+    p.daemon = False
+    p.start()
 
     while not server_running():
         pass
