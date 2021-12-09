@@ -1,9 +1,5 @@
 import sys, threading, time
-
-from multiprocessing.managers import BaseManager
-
-class QueueManager(BaseManager): pass
-QueueManager.register('get_queue')
+import mproc_child as mpc
 
 def exit_on_stdin_close():
     print("mproc poll started")
@@ -20,15 +16,14 @@ def start():
     exit_poll.daemon = False
     # This daemon thread polling stdin blocks execution of subprocesses
     # But ONLY if running in another process with stdin connected to its parent by PIPE
-    exit_poll.start()
+   # exit_poll.start()
 
-    m = QueueManager(address=('127.0.0.1', 50000), authkey=b'abracadabra')
-    m.connect()
-    queue = m.get_queue()
-    queue.put("hello")
-    time.sleep(4)
+    import multiprocessing as mp
+    queue = mp.Queue()
+    p = mp.Process(target=mpc.start, args=(queue,))
+    p.start()
+    print("result: ", queue.get())
     print("mproc done")
-
 
 if __name__ == '__main__':
     start()
