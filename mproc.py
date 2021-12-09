@@ -18,13 +18,10 @@ def start():
     # But ONLY if running in another process with stdin connected to its parent by PIPE
     exit_poll.start()
 
-    import subprocess
-    m_worker = subprocess.Popen([sys.executable, "-u", "mproc_child.py"],
-            # When creating the subprocess with an open pipe to stdin and
-            # subsequently polling that pipe, it blocks further communication
-            # between subprocesses
-            stdin=subprocess.PIPE,
-            close_fds=False,)
+    import multiprocessing as mp
+    ctx = mp.get_context('spawn')
+    with ctx.Pool(5) as pool:
+        pool.map(mpc.start, [1, 2, 3])
     print("mproc done")
 
 if __name__ == '__main__':

@@ -2,8 +2,8 @@ import multiprocessing as mp
 import time
 from multiprocessing.managers import BaseManager
 
-def start():
-    print("helloooooo")
+def start(i):
+    print("helloooooo", i)
 
 
 if __name__ == '__main__':
