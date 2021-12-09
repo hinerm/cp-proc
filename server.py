@@ -1,12 +1,12 @@
 from multiprocessing.managers import BaseManager
-import multiprocessing as mp
-import threading, sys
+import threading, socket, sys
+from queue import Queue
 
 
-ctx = mp.get_context('spawn')
-queue = ctx.Queue()
+queue = Queue()
 class QueueManager(BaseManager): pass
 QueueManager.register('get_queue', callable=lambda:queue)
+
 
 def exit_on_stdin_close():
     print("server poll started")
@@ -19,7 +19,6 @@ def exit_on_stdin_close():
 
 
 def server_running(timeout=0.25):
-    import socket
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.settimeout(timeout)
         return s.connect_ex(('localhost', 50000)) == 0
@@ -34,18 +33,19 @@ def start_server():
 
 
 def start():
-    queue_server = threading.Thread(target=start_server, name="queue-server")
-    queue_server.daemon = True
-    queue_server.start()
-
-    while not server_running():
-        pass
 
     exit_poll = threading.Thread(target=exit_on_stdin_close, name="exit-on-stdin")
     exit_poll.daemon = False
     # This daemon thread polling stdin blocks execution of subprocesses
     # But ONLY if running in another process with stdin connected to its parent by PIPE
     exit_poll.start()
+
+    queue_server = threading.Thread(target=start_server, name="queue-server")
+    queue_server.daemon = True
+    queue_server.start()
+
+    while not server_running():
+        pass
 
     m = QueueManager(address=('127.0.0.1', 50000), authkey=b'abracadabra')
     m.connect()
