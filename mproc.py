@@ -25,14 +25,14 @@ def start():
 
     m = QueueManager(address=('127.0.0.1', 50000), authkey=b'abracadabra')
     m.connect()
-    # l = m.get_lock()
-    # l.acquire()
+    l = m.get_lock()
+    l.acquire()
     print("got lock")
     queue = m.get_queue()
     queue.put("hello")
     time.sleep(2)
     print("mproc done")
-    # l.release()
+    l.release()
 
 
 if __name__ == '__main__':

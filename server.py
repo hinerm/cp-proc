@@ -1,10 +1,10 @@
 from multiprocessing.managers import SyncManager
-import threading, socket, sys
+import threading, socket, sys, time
 from queue import Queue
 
 
 queue = Queue()
-lock = None
+lock = threading.Lock()
 class QueueManager(SyncManager): pass
 QueueManager.register('get_queue', callable=lambda:queue)
 QueueManager.register('get_lock', callable=lambda:lock)
@@ -45,13 +45,12 @@ def start():
 
     m = QueueManager(address=('127.0.0.1', 50000), authkey=b'abracadabra')
     m.connect()
-    global lock
-    lock = m.Lock()
 
-    l = m.get_lock()
     queue = m.get_queue()
     for i in range(1,4):
         print(f"result: {queue.get()}")
+
+    time.sleep(2)
 
 if __name__ == '__main__':
     start()
