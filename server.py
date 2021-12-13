@@ -1,11 +1,13 @@
-from multiprocessing.managers import BaseManager
+from multiprocessing.managers import SyncManager
 import threading, socket, sys
 from queue import Queue
 
 
 queue = Queue()
-class QueueManager(BaseManager): pass
+lock = None
+class QueueManager(SyncManager): pass
 QueueManager.register('get_queue', callable=lambda:queue)
+QueueManager.register('get_lock', callable=lambda:lock)
 
 
 def exit_on_stdin_close():
@@ -43,8 +45,13 @@ def start():
 
     m = QueueManager(address=('127.0.0.1', 50000), authkey=b'abracadabra')
     m.connect()
+    global lock
+    lock = m.Lock()
+
+    l = m.get_lock()
     queue = m.get_queue()
-    print(f"result: {queue.get()}")
+    for i in range(1,4):
+        print(f"result: {queue.get()}")
 
 if __name__ == '__main__':
     start()

@@ -4,6 +4,7 @@ from multiprocessing.managers import BaseManager
 
 class QueueManager(BaseManager): pass
 QueueManager.register('get_queue')
+QueueManager.register('get_lock')
 
 def exit_on_stdin_close():
     print("mproc poll started")
@@ -24,10 +25,14 @@ def start():
 
     m = QueueManager(address=('127.0.0.1', 50000), authkey=b'abracadabra')
     m.connect()
+    # l = m.get_lock()
+    # l.acquire()
+    print("got lock")
     queue = m.get_queue()
     queue.put("hello")
-    time.sleep(4)
+    time.sleep(2)
     print("mproc done")
+    # l.release()
 
 
 if __name__ == '__main__':

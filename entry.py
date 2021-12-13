@@ -23,15 +23,16 @@ def start():
     while not server_running():
         pass
 
-    m_worker = subprocess.Popen([sys.executable, "-u", "mproc.py"],
-            # When creating the subprocess with an open pipe to stdin and
-            # subsequently polling that pipe, it blocks further communication
-            # between subprocesses
-            stdin=subprocess.PIPE,
-            close_fds=False,)
-    t = threading.Thread(args=(m_worker))
-    t.start()
-    time.sleep(3)
+    for i in range(1,4):
+        m_worker = subprocess.Popen([sys.executable, "-u", "mproc.py"],
+                # When creating the subprocess with an open pipe to stdin and
+                # subsequently polling that pipe, it blocks further communication
+                # between subprocesses
+                stdin=subprocess.PIPE,
+                close_fds=False,)
+        t = threading.Thread(args=(m_worker))
+        t.start()
+    time.sleep(10)
 
 if __name__ == '__main__':
     start()
