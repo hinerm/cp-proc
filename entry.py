@@ -32,7 +32,7 @@ def start():
                 close_fds=False,)
         t = threading.Thread(args=(m_worker))
         t.start()
-    time.sleep(10)
+    time.sleep(8)
 
 if __name__ == '__main__':
     start()

@@ -7,13 +7,11 @@ QueueManager.register('get_queue')
 QueueManager.register('get_lock')
 
 def exit_on_stdin_close():
-    print("mproc poll started")
     try:
         while sys.stdin.read():
             pass
     except:
         pass
-    print("mproc poll ended")
 
 
 def start():
